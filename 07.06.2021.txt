@@ -1,0 +1,66 @@
+* go through the packages (as much as needed)
+* review the structure 
+* connect to postgres instead of mysql:
+	* change application.properties file
+	* create a new database called spring-reddit-clone
+	* test it
+
+16.30
+____________________________________________________________________________________________
+Spring data jpa - it's an abstraction upon JPA and Hibernate. It makes interacting with 
+databases very easy.
+JPA - Java Persistence API is a specification for working with data and Java objects. 
+Just a thing that allows us to manipulate data from an external source via Java objects.
+Hibernate is the most popular implementation of the JPA interface. Hibernate is what 
+turns an object to a database record. It has an ORM - object relational mapping.
+Spring Data JPA reduces boilerplate code and simplifies the whole process. 
+
+The thing here is that our main focus should be business logic itself i.e. how everything 
+works and not the complexity of our code with messy boilerplates. This is why these abstrac-
+tions are being added.
+
+Hibernate annotations:
+@Entity - the class is a jpa entity and is mapped to a database table. DB table definition
+@Id - primary key 
+@Column - customize the way your properties are mapped to a column in the table
+@GeneratedValue - an annotation which accepts a strategy by which a new primary key will be 
+generated. The options are: 
+* GenerationType.AUTO - a strategy based on db specific dialect. Most widespread (default) - SEQUENCE
+* GenerationType.IDENTITY - the easiest, auto-increment. Not the best 
+* GenerationType.SEQUENCE - requires additional statements to get the next value from a db
+sequence. A sequence is a db entity which generates a sequence of unique numbers (like a list)
+A sequence is an ordered list of integers.
+* GenerationType.TABLE - used rarely. Forget it.
+
+@SequenceGenerator - here we specify a new sequence which we will later provide for the 
+.... @GenerationType annotation as sequence attribute (see the amigoscode jpa course repository)
+allocationSize is a number which specifies on what value of a pk we should request a new sequence 
+from a db. For performance reasons. Default allocationSize is 50 and initial value is 1. 
+
+@Email - yes, we have a special annotation for a column storing email addresses
+@Lob - for storing long texts or Base64, for example
+
+---- + association mapping annotations ----------------
+@JoinColumn(name="your desired column name") - if you want to store your foreign key in a different
+column (not in what hibernate generates by default). The referencedColumnName attribute is used when
+your need to specify what column in the mapped entity to use. (usually done in @JoinColumns annotation.
+Name alone is enough for most cases, referencedColumnName is not mandatory). Hibernate creates a new 
+relationships table with keys. If you want to avoid that, just join the two tables.
+@ManyToOne - an order can have many items, but each item belongs only to one order 
+@OneToMany - another one
+@ManyToMany - another one 
+@OneToOne - another one
+
+Each of the four relationship types can be either unidirectional or bidirectional. Uni means that only 
+one entity will have access to what it's mapped to. Bi means that we can access data from both sides. 
+To make a bi relationship, use the required annotations in both entities. The opposite is for the uni
+relationship. The 2nd entity of a bidirectional relationship should have @(Many)To(One) with an attribute
+mappedBy of the value of the column name of the 1st entity of the relationship.
+
+An important attribute of these annotations is fetchType - a way of getting mapped data 
+* FetchType.EAGER - fetch it so you'll have it when you need it. It tells hibernate to get all elements 
+of a relationship when selecting the root entity. This is the default for many-to-one and one-to-one 
+relationships
+*FetchType.LAZY - fetch it when you need it. It tells hibernate to query the data only when you need to
+use it. This is the default for one-to-many and many-to-many relationships.
+Always using FetchType.LAZY is a good choice.

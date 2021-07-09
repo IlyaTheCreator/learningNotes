@@ -1,0 +1,54 @@
+//*********** Getting started with security & authorization/authentication stuff *************//
+Folder structure I have right now:
+-src (* - what was added relatively to the last part)
+	- config - for now only for SecurityConfig file 			(*)
+	- controllers - got it 							(*)
+	- dtos - data transfer objects which come from users and which we send  (*)
+	- models - db models (spring data jpa stuff)
+	- repositories - see the (//**REPO STUFF**//) mark 
+	- services - see the (//**SERVICE STUFF**//) mark 			(*)
+
+
+// Read later.
+A good article: https://www.marcobehler.com/guides/spring-security
+// Another one:
+https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/
+
+
+//**REPO STUFF**//
+A spring data jpa repository is an abstraction upon jpa. It's an interface which provide us a convinient way
+of working with databases.
+A repository in spring boot itself is a specification upon a @Component annotation. A component is created once
+a spring boot app starts and is managed by spring boot so we can include it in any part of our application. This
+is called dependency injection. 
+
+//**SERVICE STUFF**// 
+A service is also a specification of a @Component annotation and is also managed by spring boot and is involved 
+into dependency injection thing. A controller catches a request (gets a dto), calls a particular service method 
+(returns a dto) and the service method accesses the required repository to make an operation on the data.
+
+Spring @Configuration annotation on a class allows us to put @Beans in that class.
+
+SECURITY CONFIGURATION 
+After installing spring security package, we create a config class, in our case it's called SecurityConfig. This 
+class extends WebSecurityConfigurerAdapter and the only thing we do there is we override the configure method which 
+accepts a HttpSecurity httpSecurity object with many cool things which we can specify. Inside of the method we simply
+say httpSecurity. and here's where actual configuration occurs.
+
+// implementation in FilterChain concept. Chain order matters.
+
+* .csrf.disable() - disabling csrf protection. In our token based authentication system we don't need it hence the 
+token's cryptographic features are enough. 
+* .authorizeRequests().antMatchers("your path").permitAll() - allow all users access the path we specified
+* .anyRequest().authenticated() - all requests must be authenticated.
+
+You specify which urls to protect with authenticated() and which ones are allowed with permitAll(),
+which authentication methonds are allowed (formLogin, httpBasic, etc)
+
+For authentication there are logins and passwords and for authorization there are roles and permissions.
+
+_____________________________________________________________________________________________
+It is better to use constructor injection over field injection
+In your services, all methods which access your database should by annotated by @Transactional annotation.
+
+We have to use custom exceptions because we don't want to expose technical information to users.
